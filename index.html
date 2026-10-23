@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Control Ganadero</title>
+<meta name="theme-color" content="#2f6b3a">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ganadero">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{--bg:#f5f3ec;--card:#fff;--tx:#25301f;--mut:#6b7466;--pri:#2f6b3a;--pri2:#e4eee0;--warn:#a86b12;--warn2:#fbf0dc;--bad:#b33a2e;--bad2:#f8e1de;--bd:#dcd6c8}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--tx);font-size:15px}
+header{background:var(--pri);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{margin:0;font-size:20px}
+header .finca{opacity:.85;font-size:14px}
+nav{display:flex;gap:4px;padding:8px 12px;background:#fff;border-bottom:1px solid var(--bd);overflow-x:auto;position:sticky;top:0;z-index:5}
+nav button{border:0;background:none;padding:9px 12px;border-radius:8px;font-size:14px;cursor:pointer;color:var(--tx);white-space:nowrap}
+nav button.on{background:var(--pri2);color:var(--pri);font-weight:600}
+main{padding:16px;max-width:1200px;margin:0 auto}
+h2{margin:0;font-size:20px}
+h3{margin:0 0 10px;font-size:16px}
+.bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.sp{flex:1}
+input,select,textarea{font:inherit;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--tx);width:100%}
+.bar input{width:200px}
+button,.btn{font:inherit;padding:8px 14px;border-radius:8px;border:1px solid var(--bd);background:#fff;cursor:pointer;color:var(--tx);display:inline-block}
+button.pri,.btn.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+button.del{color:var(--bad);border-color:#e9c3bd}
+.tw{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:10px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #eee9dd;vertical-align:top}
+th{background:#faf8f2;font-size:13px;color:var(--mut);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.acc{white-space:nowrap;text-align:right}
+td.acc button{padding:4px 10px;font-size:13px;margin-left:4px}
+.vacio{text-align:center;color:var(--mut);padding:24px}
+a{color:var(--pri)}
+.mut{color:var(--mut);font-size:13px;margin:4px 0 8px}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:12px;font-weight:600}
+.ok{background:var(--pri2);color:var(--pri)}.off{background:#eee;color:#777}
+.wa{background:var(--warn2);color:var(--warn)}.ba{background:var(--bad2);color:var(--bad)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:12px}
+.cards .card{margin:0}
+.num{font-size:26px;font-weight:700;color:var(--pri)}
+.lbl{font-size:13px;color:var(--mut)}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ul.al{list-style:none;padding:0;margin:0}
+ul.al li{padding:7px 0;border-bottom:1px solid #eee9dd;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+ul.al li:last-child{border:0}
+.aviso{background:var(--warn2);border:1px solid #ecd3a6;color:#6d4a10;padding:10px 14px;border-radius:10px;margin-bottom:12px}
+.res{display:flex;gap:16px;flex-wrap:wrap;margin:4px 0 10px;font-size:14px}
+.res b{font-size:16px}
+.chk{display:flex;align-items:center;gap:6px;font-size:14px;margin-bottom:8px}
+.chk input{width:auto}
+.modal{position:fixed;inset:0;background:rgba(20,25,15,.45);display:flex;align-items:flex-start;justify-content:center;padding:30px 12px;overflow-y:auto;z-index:20}
+.hidden{display:none}
+.box{background:#fff;border-radius:12px;padding:20px;width:100%;max-width:720px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.grid label{font-size:13px;color:var(--mut);display:flex;flex-direction:column;gap:4px}
+.grid .full{grid-column:1/-1}
+.acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;flex-wrap:wrap}
+.ficha{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px 14px;margin-bottom:14px}
+.ficha div span{display:block;font-size:12px;color:var(--mut)}
+.mini{min-width:0;font-size:14px;margin-bottom:12px}
+.danger{border-color:#e9c3bd}
+.guia ol{margin:6px 0 0;padding-left:20px;line-height:1.7}
+header{padding-top:calc(12px + env(safe-area-inset-top))}
+main{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+.instalar{background:var(--pri2);border:1px solid #c5dbbf;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+@media(max-width:640px){
+ .grid,.cols2{grid-template-columns:1fr}.bar input{width:100%}
+ input,select,textarea,button{font-size:16px}
+ button,.btn{padding:10px 14px}
+ .bar .pri{flex:1}
+ main{padding:12px}
+ .box{padding:16px}
+ .modal{padding:10px 6px}
+ table.lista{min-width:0}
+ .lista thead{display:none}
+ .lista tr{display:block;padding:10px 12px;border-bottom:1px solid #eee9dd}
+ .lista tr:last-child{border-bottom:0}
+ .lista td{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border:0;padding:3px 0;text-align:right}
+ .lista td::before{content:attr(data-l);color:var(--mut);font-size:13px;text-align:left;flex-shrink:0}
+ .lista td:empty{display:none}
+ .lista td.acc{justify-content:flex-end;padding-top:8px}
+ .lista td.acc::before,.lista td.vacio::before{content:none}
+ .lista td.vacio{justify-content:center}
+}
+@media print{nav,.np,.bar button,.bar input,.chk,.acts,.aviso{display:none!important}body{background:#fff}.modal{position:static;background:none;padding:0}.box{max-width:none;padding:0}}
+</style>
+</head>
+<body>
+<header><h1>🐄 Control Ganadero</h1><span class="finca" id="fincaNom"></span></header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div id="modal" class="modal hidden" onclick="if(event.target===this)cerrar()"><div class="box" id="modalBox"></div></div>
+
+<script>
+const KEY='controlGanadero_v1';
+const MODS=['pesajes','sanidad','repro','leche','finanzas'];
+function vacio(){return{finca:'Mi finca',animales:[],pesajes:[],sanidad:[],repro:[],leche:[],finanzas:[]};}
+function cargar(){try{const s=localStorage.getItem(KEY);if(s)return Object.assign(vacio(),JSON.parse(s));}catch(e){}return vacio();}
+let D=cargar();
+let guardaOK=true;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(D));guardaOK=true;}catch(e){guardaOK=false;alert('No se pudieron guardar los datos en este navegador. Vaya a "Respaldo" y descargue una copia para no perder la información.');}}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function fmtD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+const hoy=()=>fmtD(new Date());
+function addDays(s,n){const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return fmtD(d);}
+function dias(a,b){return Math.round((new Date(b+'T00:00:00')-new Date(a+'T00:00:00'))/864e5);}
+function fmtF(s){if(!s)return'';const p=String(s).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+let COPf;try{COPf=new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP',maximumFractionDigits:0});}catch(e){}
+const cop=v=>COPf?COPf.format(+v||0):'$ '+Math.round(+v||0);
+const numf=(v,d=1)=>(+v||0).toLocaleString('es-CO',{maximumFractionDigits:d});
+function edad(n){if(!n)return'';const a=new Date(n+'T00:00:00'),b=new Date();let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;if(m<0)return'';return m<12?m+' meses':Math.floor(m/12)+' a '+(m%12)+' m';}
+function animal(ar){return D.animales.find(x=>x.arete===ar);}
+function linkA(ar){if(!ar)return'';const a=animal(ar);return a?`<a href="#" onclick="ficha('${a.id}');return false">${esc(ar)}${a.nombre?' · '+esc(a.nombre):''}</a>`:esc(ar);}
+function ultimoPeso(ar){return D.pesajes.filter(p=>p.animal===ar).sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];}
+function gdp(r){const prev=D.pesajes.filter(p=>p.animal===r.animal&&p.fecha<r.fecha).sort((a,b)=>b.fecha.localeCompare(a.fecha))[0];if(!prev)return'<span class="mut">—</span>';const d=dias(prev.fecha,r.fecha);if(d<=0)return'';const g=Math.round((r.peso-prev.peso)/d*1000);return`<span class="tag ${g<0?'ba':'ok'}">${g} g/día</span> <span class="mut">(${d} días)</span>`;}
+const SERV=['Monta natural','Inseminación'];
+
+const SCH={
+animales:{titulo:'Animales',sing:'animal',
+ orden:(a,b)=>String(a.arete).localeCompare(String(b.arete),'es',{numeric:true}),
+ campos:[
+  {k:'arete',l:'N.º / Arete',t:'text',req:1},
+  {k:'nombre',l:'Nombre',t:'text'},
+  {k:'sexo',l:'Sexo',t:'select',o:['Hembra','Macho']},
+  {k:'categoria',l:'Categoría',t:'select',o:['Ternera','Ternero','Novilla','Vaca','Torete','Novillo','Toro']},
+  {k:'raza',l:'Raza',t:'text'},
+  {k:'nacimiento',l:'Fecha de nacimiento',t:'date'},
+  {k:'madre',l:'Madre (arete)',t:'text'},
+  {k:'padre',l:'Padre / toro',t:'text'},
+  {k:'lote',l:'Potrero / lote',t:'text'},
+  {k:'origen',l:'Origen',t:'select',o:['Nacido en la finca','Comprado']},
+  {k:'ingreso',l:'Fecha de compra / ingreso',t:'date'},
+  {k:'estado',l:'Estado',t:'select',o:['Activo','Vendido','Muerto']},
+  {k:'salida',l:'Fecha de venta / muerte',t:'date'},
+  {k:'notas',l:'Notas',t:'textarea'}],
+ cols:[{l:'Arete',f:r=>`<a href="#" onclick="ficha('${r.id}');return false"><b>${esc(r.arete)}</b></a>`},'nombre','sexo','categoria','raza',{l:'Edad',f:r=>edad(r.nacimiento)},'lote',
+  {l:'Último peso',f:r=>{const p=ultimoPeso(r.arete);return p?numf(p.peso)+' kg <span class="mut">'+fmtF(p.fecha)+'</span>':''}},
+  {l:'Estado',f:r=>`<span class="tag ${r.estado==='Activo'?'ok':'off'}">${esc(r.estado)}</span>`}]},
+pesajes:{titulo:'Pesajes',sing:'pesaje',
+ campos:[
+  {k:'animal',l:'Animal',t:'animal',req:1},
+  {k:'fecha',l:'Fecha',t:'date',req:1,hoy:1},
+  {k:'peso',l:'Peso (kg)',t:'number',req:1},
+  {k:'notas',l:'Notas',t:'text'}],
+ cols:['fecha',{l:'Animal',f:r=>linkA(r.animal)},{l:'Peso',f:r=>numf(r.peso)+' kg'},{l:'Ganancia diaria',f:gdp},'notas']},
+sanidad:{titulo:'Sanidad',sing:'registro',
+ campos:[
+  {k:'animal',l:'Animal',t:'animal',hato:1,req:1},
+  {k:'fecha',l:'Fecha',t:'date',req:1,hoy:1},
+  {k:'tipo',l:'Tipo',t:'select',o:['Vacuna','Desparasitación','Vitaminas / minerales','Baño (garrapata/mosca)','Tratamiento','Cirugía / curación','Otro']},
+  {k:'producto',l:'Producto / enfermedad',t:'text',req:1},
+  {k:'dosis',l:'Dosis',t:'text'},
+  {k:'proxima',l:'Próxima aplicación',t:'date'},
+  {k:'responsable',l:'Responsable / veterinario',t:'text'},
+  {k:'costo',l:'Costo (COP)',t:'number'},
+  {k:'notas',l:'Notas',t:'textarea'}],
+ cols:['fecha',{l:'Animal',f:r=>r.animal==='Todo el hato'?'<b>Todo el hato</b>':linkA(r.animal)},'tipo','producto','dosis',
+  {l:'Próxima',f:r=>{if(!r.proxima)return'';const d=dias(hoy(),r.proxima);return`<span class="tag ${d<0?'ba':d<=15?'wa':'off'}">${fmtF(r.proxima)}</span>`}},'responsable']},
+repro:{titulo:'Reproducción',sing:'evento',
+ campos:[
+  {k:'animal',l:'Hembra',t:'animal',hembras:1,req:1},
+  {k:'fecha',l:'Fecha',t:'date',req:1,hoy:1},
+  {k:'evento',l:'Evento',t:'select',o:['Celo','Monta natural','Inseminación','Palpación positiva','Palpación negativa','Parto','Aborto','Secado']},
+  {k:'toro',l:'Toro / pajilla',t:'text'},
+  {k:'cria',l:'Arete de la cría (si es parto)',t:'text'},
+  {k:'notas',l:'Notas',t:'textarea'}],
+ cols:['fecha',{l:'Hembra',f:r=>linkA(r.animal)},{l:'Evento',f:r=>`<span class="tag ${r.evento==='Parto'||r.evento==='Palpación positiva'?'ok':r.evento==='Aborto'||r.evento==='Palpación negativa'?'ba':'off'}">${esc(r.evento)}</span>`},'toro',
+  {l:'Parto probable',f:r=>SERV.includes(r.evento)?fmtF(addDays(r.fecha,283)):''},{l:'Cría',f:r=>linkA(r.cria)},'notas']},
+leche:{titulo:'Producción de leche',sing:'registro',
+ campos:[
+  {k:'fecha',l:'Fecha',t:'date',req:1,hoy:1},
+  {k:'ordeno',l:'Ordeño',t:'select',o:['Total del día','Mañana','Tarde']},
+  {k:'animal',l:'Vaca (opcional, vacío = todo el hato)',t:'animal',hembras:1,opcional:1},
+  {k:'litros',l:'Litros',t:'number',req:1},
+  {k:'notas',l:'Notas',t:'text'}],
+ cols:['fecha','ordeno',{l:'Vaca',f:r=>r.animal?linkA(r.animal):'<span class="mut">Todo el hato</span>'},{l:'Litros',f:r=>numf(r.litros)},'notas'],
+ resumen:rows=>{const t=rows.reduce((s,r)=>s+(+r.litros||0),0);const dd=new Set(rows.map(r=>r.fecha)).size;return`<div class="res"><span>Total: <b>${numf(t)} L</b></span><span>Días: <b>${dd}</b></span><span>Promedio por día: <b>${dd?numf(t/dd):0} L</b></span></div>`}},
+finanzas:{titulo:'Ingresos y gastos',sing:'movimiento',
+ campos:[
+  {k:'fecha',l:'Fecha',t:'date',req:1,hoy:1},
+  {k:'tipo',l:'Tipo',t:'select',o:['Gasto','Ingreso']},
+  {k:'categoria',l:'Categoría',t:'select',o:['Venta de ganado','Venta de leche','Venta de queso','Compra de ganado','Medicamentos y vacunas','Sal y suplementos','Mano de obra','Pastos y cercas','Mantenimiento','Combustible / transporte','Veterinario','Impuestos y trámites','Otro']},
+  {k:'descripcion',l:'Descripción',t:'text'},
+  {k:'valor',l:'Valor (COP)',t:'number',req:1},
+  {k:'animal',l:'Animal relacionado (opcional)',t:'animal',opcional:1,todos:1}],
+ cols:['fecha',{l:'Tipo',f:r=>`<span class="tag ${r.tipo==='Ingreso'?'ok':'ba'}">${esc(r.tipo)}</span>`},'categoria','descripcion',{l:'Valor',f:r=>`<b>${cop(r.valor)}</b>`},{l:'Animal',f:r=>linkA(r.animal)}],
+ resumen:rows=>{let i=0,g=0;rows.forEach(r=>r.tipo==='Ingreso'?i+=+r.valor||0:g+=+r.valor||0);return`<div class="res"><span>Ingresos: <b style="color:var(--pri)">${cop(i)}</b></span><span>Gastos: <b style="color:var(--bad)">${cop(g)}</b></span><span>Balance: <b>${cop(i-g)}</b></span></div><p class="mut">Use el buscador para filtrar, por ejemplo escriba "2026-10" para ver solo octubre de 2026.</p>`}}
+};
+
+const TABS=[['panel','Panel'],['animales','Animales'],['pesajes','Pesajes'],['sanidad','Sanidad'],['repro','Reproducción'],['leche','Leche'],['finanzas','Finanzas'],['respaldo','Respaldo']];
+let tab='panel';try{tab=localStorage.getItem(KEY+'_tab')||'panel';}catch(e){}
+const filtro={};let soloActivos=true;
+const $=id=>document.getElementById(id);
+
+function render(){
+ $('fincaNom').textContent=D.finca;
+ $('nav').innerHTML=TABS.map(([k,l])=>`<button class="${k===tab?'on':''}" onclick="ir('${k}')">${l}</button>`).join('');
+ if(tab==='panel')vistaPanel();else if(tab==='respaldo')vistaRespaldo();else vistaLista(tab);
+}
+function ir(k){tab=k;try{localStorage.setItem(KEY+'_tab',k);}catch(e){}render();window.scrollTo(0,0);}
+
+function getCols(S){return S.cols.map(c=>{if(typeof c!=='string')return c;const f=S.campos.find(x=>x.k===c);return{l:f?f.l:c,f:r=>f&&f.t==='date'?fmtF(r[c]):esc(r[c]??'')};});}
+
+function vistaLista(mod){
+ const S=SCH[mod],cols=getCols(S);
+ $('main').innerHTML=`<div class="bar"><h2>${S.titulo}</h2><div class="sp"></div><input id="q" type="search" placeholder="Buscar…" value="${esc(filtro[mod]||'')}"><button onclick="window.print()">Imprimir</button><button class="pri" onclick="abrirForm('${mod}')">+ Agregar ${S.sing}</button></div>
+ ${mod==='animales'?`<label class="chk"><input type="checkbox" id="soloAct" ${soloActivos?'checked':''}> Mostrar solo animales activos</label>`:''}
+ <div id="res"></div><div class="tw"><table class="lista"><thead><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}<th class="np"></th></tr></thead><tbody id="tb"></tbody></table></div>`;
+ const pinta=()=>{
+  const q=(filtro[mod]||'').toLowerCase();
+  let rows=D[mod].filter(r=>!q||Object.values(r).join(' ').toLowerCase().includes(q));
+  if(mod==='animales'&&soloActivos)rows=rows.filter(r=>r.estado==='Activo');
+  rows.sort(S.orden||((a,b)=>(b.fecha||'').localeCompare(a.fecha||'')));
+  $('tb').innerHTML=rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td data-l="${esc(c.l)}">${c.f(r)}</td>`).join('')}<td class="np acc"><button onclick="abrirForm('${mod}','${r.id}')">Editar</button><button class="del" onclick="borrar('${mod}','${r.id}')" title="Eliminar">✕</button></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}" class="vacio">Sin registros todavía. Use “+ Agregar ${S.sing}”.</td></tr>`;
+  $('res').innerHTML=S.resumen?S.resumen(rows):`<p class="mut">${rows.length} registro(s)</p>`;
+ };
+ $('q').oninput=e=>{filtro[mod]=e.target.value;pinta();};
+ if($('soloAct'))$('soloAct').onchange=e=>{soloActivos=e.target.checked;pinta();};
+ pinta();
+}
+
+function input(c,v){
+ const id='f_'+c.k;
+ if(c.t==='select'){if(v===''||v==null)v=c.o[0];return`<select id="${id}">${c.o.map(o=>`<option ${o===v?'selected':''}>${esc(o)}</option>`).join('')}</select>`;}
+ if(c.t==='animal'){
+  let l=D.animales.filter(a=>c.todos||a.estado==='Activo'||a.arete===v);
+  if(c.hembras)l=l.filter(a=>a.sexo==='Hembra'||a.arete===v);
+  l=[...l].sort(SCH.animales.orden);
+  let o=(c.opcional?'<option value="">— Ninguno —</option>':'')+(c.hato?`<option value="Todo el hato" ${v==='Todo el hato'?'selected':''}>Todo el hato</option>`:'');
+  o+=l.map(a=>`<option value="${esc(a.arete)}" ${a.arete===v?'selected':''}>${esc(a.arete)}${a.nombre?' – '+esc(a.nombre):''} (${esc(a.categoria)})</option>`).join('');
+  return`<select id="${id}">${o}</select>`;
+ }
+ if(c.t==='textarea')return`<textarea id="${id}" rows="2">${esc(v)}</textarea>`;
+ if(c.t==='number')return`<input id="${id}" type="text" inputmode="decimal" value="${esc(v)}">`;
+ return`<input id="${id}" type="${c.t}" value="${esc(v)}">`;
+}
+function abrirForm(mod,id,pre){
+ const S=SCH[mod];const r=id?D[mod].find(x=>x.id===id):null;
+ if(S.campos.some(c=>c.t==='animal'&&c.req&&!c.hato)&&!D.animales.length){alert('Primero registre al menos un animal en la pestaña "Animales".');return;}
+ if(mod==='repro'&&!D.animales.some(a=>a.sexo==='Hembra'&&a.estado==='Activo')&&!r){alert('No hay hembras activas registradas.');return;}
+ const val=c=>r?r[c.k]:(pre&&pre[c.k]!=null?pre[c.k]:(c.hoy?hoy():''));
+ $('modalBox').innerHTML=`<h3>${r?'Editar':'Nuevo'} ${S.sing}</h3><div class="grid">${S.campos.map(c=>`<label class="${c.t==='textarea'?'full':''}">${c.l}${c.req?' *':''}${input(c,val(c))}</label>`).join('')}</div>
+ <div class="acts">${r?`<button class="del" onclick="borrar('${mod}','${id}')">Eliminar</button><div class="sp"></div>`:''}<button onclick="cerrar()">Cancelar</button><button class="pri" onclick="guardarForm('${mod}','${id||''}')">Guardar</button></div>`;
+ $('modal').classList.remove('hidden');
+ const f=$('modalBox').querySelector('input,select');if(f)f.focus();
+}
+function cerrar(){$('modal').classList.add('hidden');}
+function guardarForm(mod,id){
+ const S=SCH[mod],o={};
+ for(const c of S.campos){
+  let v=$('f_'+c.k).value.trim();
+  if(c.req&&v===''){alert('Falta llenar: '+c.l);return;}
+  if(c.t==='number'&&v!==''){v=parseFloat(v.replace(/\./g,'').replace(',','.'));if(isNaN(v)){alert(c.l+' debe ser un número');return;}}
+  o[c.k]=v;
+ }
+ if(mod==='animales'){
+  const dup=D.animales.find(a=>a.arete.toLowerCase()===o.arete.toLowerCase()&&a.id!==id);
+  if(dup){alert('Ya existe un animal con el arete '+o.arete);return;}
+ }
+ if(id){
+  const r=D[mod].find(x=>x.id===id);
+  if(mod==='animales'&&r.arete!==o.arete){
+   MODS.forEach(m=>D[m].forEach(x=>{if(x.animal===r.arete)x.animal=o.arete;if(x.cria===r.arete)x.cria=o.arete;}));
+   D.animales.forEach(x=>{if(x.madre===r.arete)x.madre=o.arete;});
+  }
+  Object.assign(r,o);
+ }else D[mod].push({id:uid(),...o});
+ save();cerrar();render();
+ if(mod==='repro'&&o.evento==='Parto'&&o.cria&&!animal(o.cria)){
+  if(confirm('¿Desea registrar la cría '+o.cria+' como animal nuevo?'))
+   abrirForm('animales',null,{arete:o.cria,madre:o.animal,padre:o.toro,nacimiento:o.fecha,origen:'Nacido en la finca',categoria:'Ternera',estado:'Activo'});
+ }
+}
+function borrar(mod,id){
+ const r=D[mod].find(x=>x.id===id);if(!r)return;
+ let msg='¿Eliminar este registro? No se puede deshacer.';
+ if(mod==='animales'){const n=MODS.reduce((s,m)=>s+D[m].filter(x=>x.animal===r.arete).length,0);msg=`¿Eliminar el animal ${r.arete}?`+(n?`\nTiene ${n} registro(s) asociados (pesajes, sanidad, etc.) que se conservarán.`:'')+'\n\nSi fue vendido o murió, es mejor cambiar su Estado en lugar de eliminarlo.';}
+ if(!confirm(msg))return;
+ D[mod]=D[mod].filter(x=>x.id!==id);save();cerrar();render();
+}
+
+function alertasSanidad(){
+ const lim=addDays(hoy(),15);
+ return D.sanidad.filter(r=>r.proxima&&r.proxima<=lim)
+  .filter(r=>r.animal==='Todo el hato'||(animal(r.animal)&&animal(r.animal).estado==='Activo'))
+  .filter(r=>!D.sanidad.some(x=>x!==r&&x.animal===r.animal&&(x.producto||'').toLowerCase()===(r.producto||'').toLowerCase()&&x.fecha>r.fecha))
+  .sort((a,b)=>a.proxima.localeCompare(b.proxima));
+}
+function partosProximos(){
+ const h=hoy(),res=[];
+ D.animales.filter(a=>a.estado==='Activo'&&a.sexo==='Hembra').forEach(a=>{
+  const ev=D.repro.filter(r=>r.animal===a.arete).sort((x,y)=>(y.fecha||'').localeCompare(x.fecha||''));
+  const i=ev.findIndex(e=>SERV.includes(e.evento));if(i<0)return;
+  const despues=ev.slice(0,i);
+  if(despues.some(e=>['Parto','Aborto','Palpación negativa'].includes(e.evento)))return;
+  const fp=addDays(ev[i].fecha,283),d=dias(h,fp);
+  if(d<=60&&d>=-30)res.push({a,fp,d,conf:despues.some(e=>e.evento==='Palpación positiva')});
+ });
+ return res.sort((x,y)=>x.d-y.d);
+}
+
+function vistaPanel(){
+ const act=D.animales.filter(a=>a.estado==='Activo');
+ const cat={};act.forEach(a=>cat[a.categoria]=(cat[a.categoria]||0)+1);
+ const h=hoy(),mes=h.slice(0,7),anio=h.slice(0,4);
+ const fin=p=>{let i=0,g=0;D.finanzas.filter(f=>(f.fecha||'').startsWith(p)).forEach(f=>f.tipo==='Ingreso'?i+=+f.valor||0:g+=+f.valor||0);return{i,g};};
+ const fm=fin(mes),fa=fin(anio);
+ const l7d=D.leche.filter(l=>l.fecha>=addDays(h,-6)&&l.fecha<=h),l7=l7d.reduce((s,l)=>s+(+l.litros||0),0),dl=new Set(l7d.map(l=>l.fecha)).size;
+ const san=alertasSanidad(),par=partosProximos();
+ const sinPeso=act.filter(a=>{const p=ultimoPeso(a.arete);return !p||dias(p.fecha,h)>90;}).length;
+ let aviso='';
+ if(!guardaOK)aviso+=`<div class="aviso"><b>Atención:</b> este navegador no está guardando los datos. Descargue un respaldo en la pestaña Respaldo.</div>`;
+ const total=D.animales.length+MODS.reduce((s,m)=>s+D[m].length,0);
+ if(total>0&&(!D._ultimoRespaldo||dias(D._ultimoRespaldo,h)>7))aviso+=`<div class="aviso">💾 Hace ${D._ultimoRespaldo?dias(D._ultimoRespaldo,h)+' días':'tiempo'} que no descarga una copia de seguridad. <a href="#" onclick="ir('respaldo');return false">Hacer respaldo ahora</a></div>`;
+ const guia=!D.animales.length?`<div class="card guia"><h3>Cómo empezar</h3><ol>
+  <li>En <b>Respaldo</b>, escriba el nombre de su finca.</li>
+  <li>En <b>Animales</b>, registre cada animal con su número de arete.</li>
+  <li>Anote pesajes, vacunas, servicios, leche y gastos a medida que ocurran.</li>
+  <li>Este panel le avisará de vacunas pendientes y partos cercanos.</li>
+  <li>Descargue un <b>respaldo</b> cada semana y guárdelo en una memoria USB.</li></ol></div>`:'';
+ $('main').innerHTML=`${aviso}${guia}
+ <div class="cards">
+  <div class="card"><div class="num">${act.length}</div><div class="lbl">Animales activos</div></div>
+  <div class="card"><div class="num">${act.filter(a=>a.sexo==='Hembra').length} / ${act.filter(a=>a.sexo==='Macho').length}</div><div class="lbl">Hembras / Machos</div></div>
+  <div class="card"><div class="num">${numf(l7)} L</div><div class="lbl">Leche últimos 7 días${dl?' · '+numf(l7/dl)+' L/día':''}</div></div>
+  <div class="card"><div class="num" style="color:${fm.i-fm.g<0?'var(--bad)':'var(--pri)'}">${cop(fm.i-fm.g)}</div><div class="lbl">Balance de este mes</div></div>
+ </div>
+ <div class="cols2">
+  <div class="card"><h3>💉 Sanidad pendiente (próximos 15 días)</h3>${san.length?`<ul class="al">${san.map(r=>{const d=dias(h,r.proxima);return`<li><span class="tag ${d<0?'ba':'wa'}">${d<0?'Vencida hace '+(-d)+' d':d===0?'Hoy':'En '+d+' d'}</span> <b>${esc(r.producto)}</b> · ${r.animal==='Todo el hato'?'Todo el hato':linkA(r.animal)} <span class="mut">${fmtF(r.proxima)}</span></li>`}).join('')}</ul>`:'<p class="mut">Nada pendiente.</p>'}</div>
+  <div class="card"><h3>🐮 Partos probables (próximos 60 días)</h3>${par.length?`<ul class="al">${par.map(p=>`<li><span class="tag ${p.d<0?'ba':p.d<=15?'wa':'ok'}">${p.d<0?'Pasada '+(-p.d)+' d':'En '+p.d+' d'}</span> ${linkA(p.a.arete)} <span class="mut">${fmtF(p.fp)}${p.conf?' · preñez confirmada':' · sin palpación'}</span></li>`).join('')}</ul><p class="mut">Calculado con 283 días de gestación desde el último servicio. Registre el parto para que salga de la lista.</p>`:'<p class="mut">No hay partos próximos registrados.</p>'}</div>
+  <div class="card"><h3>📋 Inventario por categoría</h3>${Object.keys(cat).length?`<ul class="al">${Object.entries(cat).sort().map(([k,v])=>`<li><span style="flex:1">${esc(k)}</span><b>${v}</b></li>`).join('')}</ul>`:'<p class="mut">Sin animales activos.</p>'}${sinPeso?`<p class="mut">${sinPeso} animal(es) sin pesaje en los últimos 90 días.</p>`:''}</div>
+  <div class="card"><h3>💰 Finanzas</h3><ul class="al">
+   <li><span style="flex:1">Ingresos del mes</span><b style="color:var(--pri)">${cop(fm.i)}</b></li>
+   <li><span style="flex:1">Gastos del mes</span><b style="color:var(--bad)">${cop(fm.g)}</b></li>
+   <li><span style="flex:1">Ingresos del año ${anio}</span><b>${cop(fa.i)}</b></li>
+   <li><span style="flex:1">Gastos del año ${anio}</span><b>${cop(fa.g)}</b></li>
+   <li><span style="flex:1">Balance del año</span><b>${cop(fa.i-fa.g)}</b></li></ul></div>
+ </div>`;
+}
+
+function ficha(id){
+ const a=D.animales.find(x=>x.id===id);if(!a)return;
+ const p=D.pesajes.filter(x=>x.animal===a.arete).sort((x,y)=>x.fecha.localeCompare(y.fecha));
+ const s=D.sanidad.filter(x=>x.animal===a.arete).sort((x,y)=>y.fecha.localeCompare(x.fecha));
+ const r=D.repro.filter(x=>x.animal===a.arete).sort((x,y)=>y.fecha.localeCompare(x.fecha));
+ const crias=D.animales.filter(x=>x.madre===a.arete);
+ const lt=D.leche.filter(x=>x.animal===a.arete).reduce((t,x)=>t+(+x.litros||0),0);
+ let gTot='';if(p.length>1){const d=dias(p[0].fecha,p[p.length-1].fecha);if(d>0)gTot=Math.round((p[p.length-1].peso-p[0].peso)/d*1000)+' g/día';}
+ const campo=(l,v)=>v?`<div><span>${l}</span>${v}</div>`:'';
+ const tabla=(heads,rows)=>rows.length?`<div class="tw"><table class="mini"><thead><tr>${heads.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`:'<p class="mut">Sin registros.</p>';
+ $('modalBox').innerHTML=`<h3>Ficha del animal ${esc(a.arete)}${a.nombre?' · '+esc(a.nombre):''} <span class="tag ${a.estado==='Activo'?'ok':'off'}">${esc(a.estado)}</span></h3>
+ <div class="ficha">${campo('Sexo',esc(a.sexo))}${campo('Categoría',esc(a.categoria))}${campo('Raza',esc(a.raza))}${campo('Nacimiento',fmtF(a.nacimiento)+(a.nacimiento?' ('+edad(a.nacimiento)+')':''))}${campo('Madre',linkA(a.madre))}${campo('Padre',esc(a.padre))}${campo('Potrero / lote',esc(a.lote))}${campo('Origen',esc(a.origen))}${campo('Ingreso',fmtF(a.ingreso))}${campo('Salida',fmtF(a.salida))}${campo('Peso actual',p.length?numf(p[p.length-1].peso)+' kg':'')}${campo('Ganancia promedio',gTot)}${campo('Leche registrada',lt?numf(lt)+' L':'')}${campo('Crías',crias.map(c=>linkA(c.arete)).join(', '))}</div>
+ ${a.notas?`<p>${esc(a.notas)}</p>`:''}
+ <h3>Pesajes</h3>${tabla(['Fecha','Peso','Ganancia'],p.slice().reverse().map(x=>`<tr><td>${fmtF(x.fecha)}</td><td>${numf(x.peso)} kg</td><td>${gdp(x)}</td></tr>`))}
+ <h3>Sanidad</h3>${tabla(['Fecha','Tipo','Producto','Próxima'],s.map(x=>`<tr><td>${fmtF(x.fecha)}</td><td>${esc(x.tipo)}</td><td>${esc(x.producto)} ${esc(x.dosis)}</td><td>${fmtF(x.proxima)}</td></tr>`))}
+ ${a.sexo==='Hembra'?`<h3>Reproducción</h3>${tabla(['Fecha','Evento','Toro','Notas'],r.map(x=>`<tr><td>${fmtF(x.fecha)}</td><td>${esc(x.evento)}</td><td>${esc(x.toro)}</td><td>${esc(x.notas)}</td></tr>`))}`:''}
+ <div class="acts"><button onclick="window.print()">Imprimir</button><button onclick="nuevoPara('pesajes','${a.id}')">+ Pesaje</button><button onclick="nuevoPara('sanidad','${a.id}')">+ Sanidad</button>${a.sexo==='Hembra'?`<button onclick="nuevoPara('repro','${a.id}')">+ Evento reproductivo</button>`:''}<button onclick="abrirForm('animales','${a.id}')">Editar datos</button><button class="pri" onclick="cerrar()">Cerrar</button></div>`;
+ $('modal').classList.remove('hidden');
+}
+
+function nuevoPara(mod,id){const a=D.animales.find(z=>z.id===id);if(a)abrirForm(mod,null,{animal:a.arete});}
+
+function descargar(nombre,contenido,tipo){
+ const b=new Blob([contenido],{type:tipo});const u=URL.createObjectURL(b);
+ const a=document.createElement('a');a.href=u;a.download=nombre;document.body.appendChild(a);a.click();
+ setTimeout(()=>{URL.revokeObjectURL(u);a.remove();},800);
+}
+function descargarRespaldo(){
+ D._ultimoRespaldo=hoy();save();
+ descargar('respaldo-ganado-'+hoy()+'.json',JSON.stringify(D,null,1),'application/json');
+ render();
+}
+function restaurar(file){
+ if(!file)return;const fr=new FileReader();
+ fr.onload=()=>{try{const o=JSON.parse(fr.result);if(!Array.isArray(o.animales))throw 0;
+  if(!confirm(`El respaldo tiene ${o.animales.length} animales.\nSe REEMPLAZARÁN todos los datos actuales. ¿Continuar?`))return;
+  D=Object.assign(vacio(),o);save();alert('Datos restaurados correctamente.');tab='panel';render();
+ }catch(e){alert('El archivo no es un respaldo válido de Control Ganadero.');}};
+ fr.readAsText(file);
+}
+function csv(mod){
+ const S=SCH[mod],q=v=>{v=String(v??'');return/[;"\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+ const filas=[S.campos.map(c=>q(c.l)).join(';')].concat(D[mod].map(r=>S.campos.map(c=>q(c.t==='date'?fmtF(r[c.k]):c.t==='number'&&r[c.k]!==''&&r[c.k]!=null?String(r[c.k]).replace('.',','):r[c.k])).join(';')));
+ descargar(mod+'-'+hoy()+'.csv','\ufeff'+filas.join('\r\n'),'text/csv;charset=utf-8');
+}
+function borrarTodo(){
+ if(!confirm('¿Borrar TODOS los datos de la finca? Descargue un respaldo antes.'))return;
+ if(prompt('Para confirmar escriba BORRAR')!=='BORRAR')return;
+ D=vacio();save();render();
+}
+function vistaRespaldo(){
+ $('main').innerHTML=`<h2 style="margin-bottom:12px">Respaldo y ajustes</h2>
+ <div class="card"><h3>Nombre de la finca</h3><div class="bar"><input id="nf" value="${esc(D.finca)}" style="max-width:320px"><button class="pri" onclick="D.finca=$('nf').value.trim()||'Mi finca';save();render()">Guardar</button></div></div>
+ <div class="card"><h3>💾 Copia de seguridad</h3>
+  <p>La información se guarda <b>solo en este equipo (celular o computador)</b>, sin internet. Si se daña el equipo o se borra el historial del navegador, se pierde. Por eso descargue una copia cada semana y guárdela en una memoria USB o en otro equipo.</p>
+  <p class="mut">Último respaldo: <b>${D._ultimoRespaldo?fmtF(D._ultimoRespaldo):'nunca'}</b> · Registros: ${D.animales.length} animales, ${D.pesajes.length} pesajes, ${D.sanidad.length} sanidad, ${D.repro.length} reproducción, ${D.leche.length} leche, ${D.finanzas.length} finanzas.</p>
+  <div class="bar"><button class="pri" onclick="descargarRespaldo()">Descargar respaldo</button><label class="btn">Restaurar desde un respaldo<input type="file" accept=".json,application/json" hidden onchange="restaurar(this.files[0]);this.value=''"></label></div>
+  <p class="mut">Para pasar los datos a otro computador: descargue el respaldo aquí, copie este programa y el respaldo al otro equipo, ábralo y use “Restaurar”.</p></div>
+ <div class="card"><h3>📊 Exportar a Excel</h3><p class="mut">Descarga cada tabla en un archivo que se abre con Excel.</p><div class="bar">${Object.keys(SCH).map(m=>`<button onclick="csv('${m}')">${SCH[m].titulo}</button>`).join('')}</div></div>
+ <div class="card danger"><h3>Borrar todo</h3><p class="mut">Elimina toda la información de este equipo.</p><button class="del" onclick="borrarTodo()">Borrar todos los datos</button></div>`;
+}
+async function compartirRespaldo(){
+ const nombre='respaldo-ganado-'+hoy()+'.json';
+ try{
+  const f=new File([JSON.stringify(D,null,1)],nombre,{type:'application/json'});
+  if(navigator.canShare&&navigator.canShare({files:[f]})){
+   await navigator.share({files:[f],title:'Respaldo Control Ganadero'});
+   D._ultimoRespaldo=hoy();save();render();return;
+  }
+ }catch(e){if(e&&e.name==='AbortError')return;}
+ alert('Este celular no permite compartir archivos. Use "Descargar respaldo".');
+}
+/* App instalable y sin internet */
+let promptInstalar=null;
+const esApp=()=>{try{return(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}catch(e){return false;}};
+const esIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent);
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();promptInstalar=e;if(tab==='panel'||tab==='respaldo')render();});
+window.addEventListener('appinstalled',()=>{promptInstalar=null;render();});
+async function instalar(){if(!promptInstalar)return;promptInstalar.prompt();await promptInstalar.userChoice;promptInstalar=null;render();}
+function bloqueInstalar(){
+ if(esApp())return'';
+ if(promptInstalar)return`<div class="instalar">📲 <b>Instale esta app en su celular</b> para abrirla con un ícono y usarla sin internet. <div style="margin-top:8px"><button class="pri" onclick="instalar()">Instalar app</button></div></div>`;
+ if(esIOS())return`<div class="instalar">📲 <b>Para instalar en iPhone:</b> abra esta página en Safari, toque el botón <b>Compartir</b> (cuadro con flecha) y luego <b>“Agregar a pantalla de inicio”</b>.</div>`;
+ if(/android/i.test(navigator.userAgent))return`<div class="instalar">📲 <b>Para instalar:</b> en Chrome toque el menú <b>⋮</b> y luego <b>“Instalar app”</b> o <b>“Agregar a la pantalla principal”</b>.</div>`;
+ return'';
+}
+const _vistaPanel=vistaPanel;vistaPanel=function(){_vistaPanel();$('main').insertAdjacentHTML('afterbegin',bloqueInstalar());};
+const _vistaRespaldo=vistaRespaldo;vistaRespaldo=function(){
+ _vistaRespaldo();
+ const b=$('main').querySelector('.card:nth-of-type(2) .bar');
+ if(b&&navigator.share)b.insertAdjacentHTML('beforeend','<button onclick="compartirRespaldo()">Enviar respaldo (WhatsApp, correo…)</button>');
+ $('main').insertAdjacentHTML('beforeend',bloqueInstalar());
+};
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')cerrar();});
+render();
+</script>
+</body>
+</html>
